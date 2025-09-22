@@ -1,0 +1,204 @@
+/**********************************************************
+* A
+* Project 4: Gerp
+* CS 15
+* README
+* Carter Ng-Yu cngyu01 and Leventis Qiu cqui02
+*
+*********************************************************/
+
+B - Program Purpose:
+
+The purpose of this program is to create and implement a program that indexes
+a directory and allows for the user to search for words in that directory,
+printing the line number, file path, and content of the line to the provided
+output file. The user will able to use commands to either complete a sensitive
+or insensitive search of a word, change the output file, or quit the program.
+
+C - Acknowledgements:
+Lab TAs: Alana and Sabeeh
+Friend: Enqi Li
+
+D - Files (List of Files and Brief Description):
+
+hashtable.h: Implementation and Interface of the hashtable class, which
+    includes key functions and information regarding the storage of
+    information through use of key/value pairs. Use of templates allow for
+    multiple types of variables to be used in the hashtable. Important
+    functions include, insert, which inserts a value into the hashmap using a
+    key. get, which retrives access to a value by using a key. search, which
+    certifies that a key/value pair exists within the hashmap.
+
+hashtable.cpp: Empty file used for the Makefile compilation of hashtable.o.
+
+Indexer.cpp: Implementation of the Indexer class which includes key functions
+    regarding the indexing of the provided directory and its files. Other
+    important functions are getters for the Hash Table index and Vector of
+    file data, and functions that strip a provided string (allLowercase,
+    stripNonAlphaNum).
+
+Indexer.h: Interface of the Indexer class, which includes key information
+    regarding the Indexer class.
+   
+Searcher.cpp: Implementation of the Searcher class which includes key functions
+    regarding the searching of the index and handling of queries and the
+    printing of the output. Key functions include the constructor which uses
+    Indexer to index the directory, and the calls query to start the query
+    loop. the query function starts the query loop and calls other functions
+    to retrieve the proper output depending on the command. searchAWord
+    searches the index and finds all the data needed for the query, compiling
+    it for output.
+
+Searcher.h: Interface of the Searcher class, which includes key information
+    regarding the Searcher class.
+
+README: A file full of text detailing the implementation and other aspects of
+    the project
+
+main.cpp: Main function is a driver file that creates a SEARCHER object and
+    calls the functions that index the directory and start the implementation,
+    allowing for users to send commands and queries. Also checks command line
+    for a valid command line.
+
+unit_test.h: A unit testing file for the gerp Project and the classes
+    within. Runs in conjunction with the unit_test framework to allow for
+    testing of individual functions.
+
+testDir: A simple testing directory to ensure the basic functionality of
+    our gerp implementation. Contains a sub-directory and multiple test files
+    with minimal words to be indexed. Tests ensure that directory traversal
+    works and that our index properly functions with multiple files.
+
+testDir2: A simple testing directory to ensure the basic functionality of
+    our gerp implementation. Contains a sub-directory and multiple test files
+    with minimal words to be indexed. Tests ensure that the file does not
+    index duplicate words on the same line and correctly indexes words
+    attached to non-alphanumeric characters.
+
+command1.txt: A simple testing file that contains commands to be processed by
+    our gerp implementation. Tests for multiple edge cases, such as two
+    queries on the same command line, queries with different capitalization,
+    insensitive searches, queries attachted to non-alphanmueric characters,
+    and the @f command.
+
+Makefile: File to build the program.
+
+E - Compile/run:
+    - Compile using
+           make gerp
+    - run executable with
+           ./gerp inputDirectory outputFile
+
+F - Architectural Overview (How various modules relate):
+
+The Indexer class uses the hashtable class to implement both the index 
+(wordMap) of every word from every file in the directory, and the lineCheck 
+which stores every word’s line number and file origin to ensure no duplicates 
+from the same line and file are added to the index. The hashtable allows easy 
+storage using key/value pairs and easy access using keys, making it perfect for 
+Indexer to use it as an index. Every word is indexed by inserting it into the 
+hashtable, or accessing the value from the hashtable to add to it. Indexer also 
+briefly uses DirNode and FSTree to store all the directories and traverse 
+through them, indexing every file.
+
+The Searcher class uses the Indexer class to create an index of the provided 
+directory, allowing easy access for whenever Searcher is prompted with a query 
+or command. It uses the Indexer class with its hashtable implementations to 
+finish the implementation of gerp, allowing all input commands to be executed, 
+printing output to the output file.
+
+G - Data Structures (Outline of data structures):
+
+HMap<type1,type2> is a special class we use to implement a hashtable, or 
+unordered_map in c++. This is a special class because we are using templates 
+instead of a normal class. The advantage of using a template is that we don’t 
+have to specify which type to store in HMap, and we can easily use this map by 
+just declare eg. HMap<int,int>. TA suggested that we can put .tpp and .h 
+contents all in the hashtable.h.The basic structure of this HMap relies on 
+std::hash and std::vector, where hash provides the address of the bucket in 
+the vector and vector provides the space to store data. When HMap grows to 
+over 0.7 loadfactor, Rehash function is called to expand the vector and rehash 
+everything in the old vector to the new vector. 
+
+The Indexer class contains and uses a multitude of data structures. To
+represent a word, we used a Word struct that contained an integer to represent
+the Word's line number, a bool to represent whether the Word should be part of
+a sensitive or insensitive search, and another integer to represent which file
+the Word was from. To represent a value, we used a Value struct that contained
+our own Hash Map implementation with an integer as the key, and an integer as
+the value. The key is used to represent the Word's line number, and it will
+provide access to a value which represents the Word's file origin, allowing us
+to check every Word's line number and filepath to ensure that no duplicate
+words from the same line and file are indexed. The second part of the Value
+struct is a vector of Word structs. This is used as storage for multiple of the
+same word when indexing, allowing us to save space by only having one Value
+struct for every word, but keeping access to every word that is indexed.
+
+The private member variables of Indexer include data structures such as
+wordMap, which is a Hash Map that represents the complete index of every word
+from every file. The key is a string that represents the word that you either
+want to retrieve or index, and the value is a Value struct that stores all the
+information or data of a word's entry. This provides efficient time complexity
+to index and access words, allowing the program to run quickly and efficiently.
+filePathMap is a vector of strings that stores every word's file path. This
+allows access to every word's file path for when we print to output.
+fileData is a vector of vectors of strings that stores all the text from every
+file in the directory. We use a vector because each slot can represent a
+different file, and each vector within those slots can store all the text
+line-by-line (slot-by-slot), allowing for easy storage and access to any line
+of text from any file.
+
+We also used the provided DirNode class and FSTree class which uses nodes to 
+create a N-ery tree that is used to represent a directory and its 
+sub-directories. This tree is used because it provides easy access to traverse 
+the tree/directory and gain access to each sub-directory, allowing us to index 
+every file while maintaining their file paths. In our indexDirectory function, 
+we use a stack to traverse the FSTree, indexing every file and in a directory 
+before popping it off the stack and pushing on the next directories.
+
+H - Testing:
+
+We tested our hashtable implementation by using unit_tests to individually test 
+certain functions. We tested functions to ensure that they were working 
+properly and would work with the variables we were going to use in Indexer 
+(structs and other more complex variables). For example, one unit_test checked 
+whether our hashtable could hold a Word struct with multiple variables inside 
+of it and a Value struct with a hashtable and vector inside of it. We inserted 
+a value into our hashtable and printed the value inside the hashtable to cout, 
+to ensure that we had access and that the data was being inserted correctly.
+
+We tested our entire gerp implementation by creating a small test directory to
+make it easy to understand what errors we were getting and to make it easy to 
+alter the directory to test new areas of the implementation. We also used a 
+command text file so we would get consistent output. We ran our implementation 
+and the reference with the command file, sorting the output files and diffing 
+them to see and understand the differences between the two files and to catch 
+any errors in our implementation. The test directory 2 has a sub-directory to 
+test our traversal function, and we have many words with non-alphanumeric 
+haracters attached to test our strip functionality. We also have multiple of 
+the same word on the same line to test whether our implementation adds 
+duplicates when it should not. The command file tests for multiple edge cases, 
+such as two queries on the same command line, queries with different 
+capitalization, insensitive searches, queries that have non-alphanumeric 
+characters attached to them, and the @f command.
+
+Once we felt like we had functional implementation, we tested it with the 
+small, medium, and large Gutenberg test files, ensuring that our program 
+indexed each file in the allotted amount of time. We also tested functionality 
+of our program with the Gutenberg test files by searching for words like Mark 
+and we used the Gutenberg test files to better understand the reference 
+implementation and how our implementation needed to be improved. One 
+interesting bug we discovered was that we did not account properly for a query 
+that ended up in a search for an empty string.
+
+I - Time Spent:
+Part 1: 5 hours
+Part 2: 30 hours
+
+
+
+
+
+
+
+
